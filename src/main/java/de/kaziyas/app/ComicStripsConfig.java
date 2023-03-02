@@ -16,14 +16,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @Configuration
 class ComicStripsConfig {
 
-    //    @Bean
-    public ObjectMapper configureJson() {
-        return new Jackson2ObjectMapperBuilder()
-                .indentOutput(true)
-                .propertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE)
-                .build();
-    }
-
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer customizeJson() {
         return builder -> {

@@ -2,6 +2,7 @@ package de.kaziyas.app.controller;
 
 import com.rometools.rome.io.FeedException;
 import de.kaziyas.app.model.CustomJson;
+import de.kaziyas.app.service.ComicStripsService;
 import de.kaziyas.app.util.RSSFeedsParser;
 import de.kaziyas.app.util.XKCDReader;
 import org.junit.jupiter.api.Assertions;
@@ -38,6 +39,9 @@ public class ComicStripsControllerTest {
     @Mock
     XKCDReader xkcdReader;
 
+    @Mock
+    ComicStripsService comicStripsService;
+
     List<CustomJson> rssFeeds = new ArrayList<>();
     List<CustomJson> xKCDs = new ArrayList<>();
     final List<CustomJson> the20ComicStrips = new ArrayList<>();
@@ -55,10 +59,12 @@ public class ComicStripsControllerTest {
     void getComicStrips() throws IOException, FeedException {
         when(rssFeedsParser.getLast10Feeds()).thenReturn(rssFeeds);
         when(xkcdReader.getLast10Records()).thenReturn(xKCDs);
+        when(comicStripsService.getComicStrips()).thenReturn(the20ComicStrips);
+
         final List<CustomJson> comicStrips = comicStripsController.getComicStrips();
         Assertions.assertNotNull(comicStrips);
         Assertions.assertEquals(20, comicStrips.size());
-        Assertions.assertEquals(getSortedList(the20ComicStrips), comicStrips);
+        Assertions.assertEquals(getSortedList(the20ComicStrips), getSortedList(comicStrips));
     }
 
     private List<CustomJson> getSortedList(List<CustomJson> comicStrips) {
