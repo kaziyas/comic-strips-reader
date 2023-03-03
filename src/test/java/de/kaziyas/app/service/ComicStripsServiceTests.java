@@ -1,16 +1,16 @@
-package de.kaziyas.app.controller;
+package de.kaziyas.app.service;
 
 import com.rometools.rome.io.FeedException;
 import de.kaziyas.app.model.CustomJson;
-import de.kaziyas.app.service.ComicStripsService;
 import de.kaziyas.app.util.RSSFeedsParser;
 import de.kaziyas.app.util.XKCDReader;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -20,18 +20,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.*;
 
 /**
  * @author yaser.kazerooni (yaser.kazerooni@gmail.com)
- * @created 01/March/2023
- * @project comic strips reader
+ * @created 03/March/2023
+ * @project comicStripsReader
  */
 
-public class ComicStripsControllerTest {
+@ExtendWith(MockitoExtension.class)
+public class ComicStripsServiceTests {
 
     @InjectMocks
-    ComicStripsController comicStripsController;
+    ComicStripsService service;
 
     @Mock
     RSSFeedsParser rssFeedsParser;
@@ -39,42 +42,25 @@ public class ComicStripsControllerTest {
     @Mock
     XKCDReader xkcdReader;
 
-    @Mock
-    ComicStripsService comicStripsService;
-
-    List<CustomJson> rssFeeds = new ArrayList<>();
-    List<CustomJson> xKCDs = new ArrayList<>();
-    final List<CustomJson> the20ComicStrips = new ArrayList<>();
-
-    @BeforeEach
-    void Setup() {
-        MockitoAnnotations.initMocks(this);
-        rssFeeds = getRssFeeds();
-        xKCDs = getXKCDs();
-        the20ComicStrips.addAll(rssFeeds);
-        the20ComicStrips.addAll(xKCDs);
-    }
-
     @Test
-    void getComicStrips() throws IOException, FeedException {
-        when(rssFeedsParser.getLast10Feeds()).thenReturn(rssFeeds);
-        when(xkcdReader.getLast10Records()).thenReturn(xKCDs);
-        when(comicStripsService.getComicStrips()).thenReturn(the20ComicStrips);
+    public void testGetComicStrips() throws IOException, FeedException {
+        when(rssFeedsParser.getLast10Feeds()).thenReturn(getRssFeeds());
+        when(xkcdReader.getLast10Records()).thenReturn(getXKCDs());
 
-        final List<CustomJson> comicStrips = comicStripsController.getComicStrips();
-        Assertions.assertNotNull(comicStrips);
-        Assertions.assertEquals(20, comicStrips.size());
-        Assertions.assertEquals(getSortedList(the20ComicStrips), getSortedList(comicStrips));
-    }
+        List<CustomJson> comicStrips = service.getComicStrips();
 
-    private List<CustomJson> getSortedList(List<CustomJson> comicStrips) {
-        Comparator<CustomJson> compareByPublishingDate =
-                Comparator.comparing(CustomJson::getPublishingDate, Comparator.reverseOrder());
+        assertEquals(20, comicStrips.size());
+        assertEquals("comic5", comicStrips.get(0).getTitle());
 
-        return comicStrips
-                .stream()
-                .sorted(compareByPublishingDate)
-                .collect(Collectors.toList());
+        verify(rssFeedsParser, times(1)).getLast10Feeds();
+        verify(xkcdReader, times(1)).getLast10Records();
+
+        List<CustomJson> the20ComicStrips = new ArrayList<>(20);
+        the20ComicStrips.addAll(getRssFeeds());
+        the20ComicStrips.addAll(getXKCDs());
+
+        assertNotEquals(comicStrips.get(5).getPublishingDate(), the20ComicStrips.get(5).getPublishingDate());
+        assertEquals(comicStrips.get(5).getPublishingDate(), getSortedList(the20ComicStrips).get(5).getPublishingDate());
     }
 
     private List<CustomJson> getRssFeeds() {
@@ -113,5 +99,15 @@ public class ComicStripsControllerTest {
         });
 
         return returnValue;
+    }
+
+    private List<CustomJson> getSortedList(List<CustomJson> comicStrips) {
+        Comparator<CustomJson> compareByPublishingDate =
+                Comparator.comparing(CustomJson::getPublishingDate, Comparator.reverseOrder());
+
+        return comicStrips
+                .stream()
+                .sorted(compareByPublishingDate)
+                .collect(Collectors.toList());
     }
 }
