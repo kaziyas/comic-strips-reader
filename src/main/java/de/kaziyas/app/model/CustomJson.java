@@ -9,12 +9,16 @@ import java.time.format.DateTimeFormatter;
  * @project comic strips reader
  */
 
-public final class CustomJson {
+public class CustomJson {
 
-    private final String title;
-    private final String browserViewURL;
-    private final LocalDate publishingDate;
-    private final String imageURL;
+    private String title;
+    private String browserViewURL;
+    private LocalDate publishingDate;
+    private String imageURL;
+
+    public CustomJson() {
+        super();
+    }
 
     public CustomJson(String title, String browserViewURL, LocalDate publishingDate,
                       String imageURL) {
@@ -24,25 +28,40 @@ public final class CustomJson {
         this.browserViewURL = browserViewURL;
     }
 
-    public final String getTitle() {
+    private LocalDate getFormattedPublishingDate(LocalDate publishingDate) {
+        publishingDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        return publishingDate;
+    }
+
+    public String getTitle() {
         return title;
     }
 
-    public final String getImageURL() {
-        return imageURL;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public final LocalDate getPublishingDate() {
-        return publishingDate;
-    }
-
-    public final String getBrowserViewURL() {
+    public String getBrowserViewURL() {
         return browserViewURL;
     }
 
-    private LocalDate getFormattedPublishingDate(LocalDate publishingDate) {
-        publishingDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    public void setBrowserViewURL(String browserViewURL) {
+        this.browserViewURL = browserViewURL;
+    }
 
+    public LocalDate getPublishingDate() {
         return publishingDate;
+    }
+
+    public void setPublishingDate(LocalDate publishingDate) {
+        this.publishingDate = publishingDate;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }
