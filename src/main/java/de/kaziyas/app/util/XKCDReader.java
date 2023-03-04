@@ -2,7 +2,7 @@ package de.kaziyas.app.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import de.kaziyas.app.model.CustomJson;
+import de.kaziyas.app.model.ComicStrip;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,12 +26,12 @@ public class XKCDReader {
 
     private static final String XKCD_NUMBER_OF_FILE_URL = "https://xkcd.com/info.0.json";
 
-    public List<CustomJson> getLast10Records() throws IOException {
+    public List<ComicStrip> getLast10Records() throws IOException {
         int xkcdNumberkcd = getLastXkcdNumber();
-        final List<CustomJson> xkcdJsons = new ArrayList<>();
+        final List<ComicStrip> xkcdJsons = new ArrayList<>();
         IntStream.range(xkcdNumberkcd - 10, xkcdNumberkcd).forEach(i ->
         {
-            CustomJson json;
+            ComicStrip json;
             try {
                 json = xkcdParser(i);
             } catch (IOException e) {
@@ -43,7 +43,7 @@ public class XKCDReader {
         return xkcdJsons;
     }
 
-    private CustomJson xkcdParser(int id) throws IOException {
+    private ComicStrip xkcdParser(int id) throws IOException {
         URL url = new URL("https://xkcd.com/" + id + "/info.0.json");
         final JsonElement jsonElement = getJsonElement(url);
 
@@ -66,13 +66,13 @@ public class XKCDReader {
         return jsonElement;
     }
 
-    private CustomJson getCustomJson(JsonElement jsonElement) {
+    private ComicStrip getCustomJson(JsonElement jsonElement) {
         final LocalDate myDate = getLocalDate(jsonElement);
         final String title = jsonElement.getAsJsonObject().get("title").getAsString();
         final String link = jsonElement.getAsJsonObject().get("link").getAsString();
         final String img = jsonElement.getAsJsonObject().get("img").getAsString();
 
-        return new CustomJson(title, link, myDate, img);
+        return new ComicStrip(title, link, myDate, img);
     }
 
     private LocalDate getLocalDate(JsonElement jsonElement) {

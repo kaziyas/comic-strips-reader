@@ -5,7 +5,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import de.kaziyas.app.model.CustomJson;
+import de.kaziyas.app.model.ComicStrip;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,7 +31,7 @@ public class RSSFeedsParser {
 
     private static final String RSS_FEED_URL = "http://feeds.feedburner.com/PoorlyDrawnLines";
 
-    public List<CustomJson> getLast10Feeds() throws IOException, FeedException {
+    public List<ComicStrip> getLast10Feeds() throws IOException, FeedException {
         URL url = new URL(RSS_FEED_URL);
         SyndFeed feed = new SyndFeedInput().build(new XmlReader(url));
 
@@ -39,7 +39,7 @@ public class RSSFeedsParser {
                 .collect(Collectors.toList());
     }
 
-    private CustomJson syndEntry2CustomJson(SyndEntry entry) {
+    private ComicStrip syndEntry2CustomJson(SyndEntry entry) {
         String imageURL = entry.getContents().get(0).getValue();
         imageURL = HtmlParser.parse(imageURL);
 
@@ -49,7 +49,7 @@ public class RSSFeedsParser {
         LocalDate date = publishedDate.toInstant().atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        return new CustomJson(
+        return new ComicStrip(
                 title,
                 link,
                 date,

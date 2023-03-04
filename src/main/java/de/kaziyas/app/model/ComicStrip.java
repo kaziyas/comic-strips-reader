@@ -9,18 +9,18 @@ import java.time.format.DateTimeFormatter;
  * @project comic strips reader
  */
 
-public class CustomJson {
+public class ComicStrip {
 
     private String title;
     private String browserViewURL;
     private LocalDate publishingDate;
     private String imageURL;
 
-    public CustomJson() {
+    public ComicStrip() {
         super();
     }
 
-    public CustomJson(String title, String browserViewURL, LocalDate publishingDate,
+    public ComicStrip(String title, String browserViewURL, LocalDate publishingDate,
                       String imageURL) {
         this.title = title;
         this.imageURL = imageURL;

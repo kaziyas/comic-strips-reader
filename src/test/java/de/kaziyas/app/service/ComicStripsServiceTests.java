@@ -1,16 +1,14 @@
 package de.kaziyas.app.service;
 
 import com.rometools.rome.io.FeedException;
-import de.kaziyas.app.model.CustomJson;
+import de.kaziyas.app.model.ComicStrip;
 import de.kaziyas.app.util.RSSFeedsParser;
 import de.kaziyas.app.util.XKCDReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -47,7 +45,7 @@ public class ComicStripsServiceTests {
         when(rssFeedsParser.getLast10Feeds()).thenReturn(getRssFeeds());
         when(xkcdReader.getLast10Records()).thenReturn(getXKCDs());
 
-        List<CustomJson> comicStrips = service.getComicStrips();
+        List<ComicStrip> comicStrips = service.getComicStrips();
 
         assertEquals(20, comicStrips.size());
         assertEquals("comic5", comicStrips.get(0).getTitle());
@@ -55,7 +53,7 @@ public class ComicStripsServiceTests {
         verify(rssFeedsParser, times(1)).getLast10Feeds();
         verify(xkcdReader, times(1)).getLast10Records();
 
-        List<CustomJson> the20ComicStrips = new ArrayList<>(20);
+        List<ComicStrip> the20ComicStrips = new ArrayList<>(20);
         the20ComicStrips.addAll(getRssFeeds());
         the20ComicStrips.addAll(getXKCDs());
 
@@ -63,47 +61,47 @@ public class ComicStripsServiceTests {
         assertEquals(comicStrips.get(5).getPublishingDate(), getSortedList(the20ComicStrips).get(5).getPublishingDate());
     }
 
-    private List<CustomJson> getRssFeeds() {
-        List<CustomJson> returnValue = new ArrayList<>();
+    private List<ComicStrip> getRssFeeds() {
+        List<ComicStrip> returnValue = new ArrayList<>();
         IntStream.rangeClosed(1, 5).forEach(i -> {
-            CustomJson customJson = new CustomJson("Strip" + i, "www.test.de/" + i + ".html",
+            ComicStrip comicStrip = new ComicStrip("Strip" + i, "www.test.de/" + i + ".html",
                     LocalDate.now().plusDays(i),
                     "www.test.de/test" + i + ".png");
-            returnValue.add(customJson);
+            returnValue.add(comicStrip);
         });
 
         IntStream.rangeClosed(6, 10).forEach(i -> {
-            CustomJson customJson = new CustomJson("Strip" + i, "www.test.de/" + i + ".html",
+            ComicStrip comicStrip = new ComicStrip("Strip" + i, "www.test.de/" + i + ".html",
                     LocalDate.now().minusDays(i),
                     "www.test.de/test" + i + ".png");
-            returnValue.add(customJson);
+            returnValue.add(comicStrip);
         });
 
         return returnValue;
     }
 
-    private List<CustomJson> getXKCDs() {
-        List<CustomJson> returnValue = new ArrayList<>();
+    private List<ComicStrip> getXKCDs() {
+        List<ComicStrip> returnValue = new ArrayList<>();
         IntStream.rangeClosed(1, 5).forEach(i -> {
-            CustomJson customJson = new CustomJson("comic" + i, "www.comic.de/" + i + ".html",
+            ComicStrip comicStrip = new ComicStrip("comic" + i, "www.comic.de/" + i + ".html",
                     LocalDate.now().plusDays(i * 2),
                     "www.comic.de/comic" + i + ".jpg");
-            returnValue.add(customJson);
+            returnValue.add(comicStrip);
         });
 
         IntStream.rangeClosed(6, 10).forEach(i -> {
-            CustomJson customJson = new CustomJson("Strip" + i, "www.comic.de/" + i + ".html",
+            ComicStrip comicStrip = new ComicStrip("Strip" + i, "www.comic.de/" + i + ".html",
                     LocalDate.now().minusDays(i * 2),
                     "www.comic.de/comic" + i + ".jpg");
-            returnValue.add(customJson);
+            returnValue.add(comicStrip);
         });
 
         return returnValue;
     }
 
-    private List<CustomJson> getSortedList(List<CustomJson> comicStrips) {
-        Comparator<CustomJson> compareByPublishingDate =
-                Comparator.comparing(CustomJson::getPublishingDate, Comparator.reverseOrder());
+    private List<ComicStrip> getSortedList(List<ComicStrip> comicStrips) {
+        Comparator<ComicStrip> compareByPublishingDate =
+                Comparator.comparing(ComicStrip::getPublishingDate, Comparator.reverseOrder());
 
         return comicStrips
                 .stream()
